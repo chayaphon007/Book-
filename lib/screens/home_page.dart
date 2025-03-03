@@ -23,6 +23,32 @@ class _HomePageState extends State<HomePage> {
   String? selectedAuthor;
   final String entityName = "Book";
 
+  void confirmDelete(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.brown[50],
+        title:
+            const Text('Confirm Delete', style: TextStyle(color: Colors.brown)),
+        content: const Text('Are you sure you want to delete this book?',
+            style: TextStyle(color: Colors.brown)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel', style: TextStyle(color: Colors.brown)),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.removeBook(index);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Book> filteredBooks = widget.books.where((book) {
@@ -42,7 +68,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 Text(
-                  "Welcome to $entityName Browse and manage your favorite books.",
+                  "Welcome to $entityName! Browse and manage your favorite books.",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -123,20 +149,35 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(10),
                     itemCount: filteredBooks.length,
                     itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.brown[100],
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          title: Text(filteredBooks[index].title,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.brown)),
-                          subtitle: Text(
-                            'Author: ${filteredBooks[index].author}\nCategory: ${filteredBooks[index].category}\nDate: ${DateFormat.yMMMd().format(filteredBooks[index].date)}',
-                            style: const TextStyle(color: Colors.brown),
+                      return Dismissible(
+                        key: Key(filteredBooks[index].title),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (direction) async {
+                          confirmDelete(context, index);
+                          return false;
+                        },
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          color: Colors.red,
+                          child: const Icon(Icons.delete,
+                              color: Colors.white, size: 30),
+                        ),
+                        child: Card(
+                          color: Colors.brown[100],
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16),
+                            title: Text(filteredBooks[index].title,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.brown)),
+                            subtitle: Text(
+                              'Author: ${filteredBooks[index].author}\nCategory: ${filteredBooks[index].category}\nDate: ${DateFormat.yMMMd().format(filteredBooks[index].date)}',
+                              style: const TextStyle(color: Colors.brown),
+                            ),
+                            isThreeLine: true,
                           ),
-                          isThreeLine: true,
                         ),
                       );
                     },
