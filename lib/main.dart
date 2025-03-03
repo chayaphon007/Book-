@@ -33,7 +33,7 @@ class _BookAppState extends State<BookApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Library',
+      title: 'Book',
       theme: ThemeData(
         primarySwatch: Colors.brown,
         scaffoldBackgroundColor: Colors.brown[50],

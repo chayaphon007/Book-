@@ -38,6 +38,28 @@ class _AddPageState extends State<AddPage> {
     }
   }
 
+  void _validateAndSubmit() {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a date.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      widget.addBook(Book(
+        title: _titleController.text,
+        author: _authorController.text,
+        score: int.parse(_scoreController.text),
+        date: _selectedDate!,
+        category: _selectedCategory!,
+      ));
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,19 +157,7 @@ class _AddPageState extends State<AddPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate() &&
-                      _selectedDate != null) {
-                    widget.addBook(Book(
-                      title: _titleController.text,
-                      author: _authorController.text,
-                      score: int.parse(_scoreController.text),
-                      date: _selectedDate!,
-                      category: _selectedCategory!,
-                    ));
-                    Navigator.pop(context);
-                  }
-                },
+                onPressed: _validateAndSubmit,
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   child: Text('Add Book',
